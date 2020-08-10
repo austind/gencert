@@ -14,8 +14,6 @@ CSR_ST="Being"
 CSR_L="Springfield"
 CSR_O="Dis"
 
-DIV="***************************************************"
-
 echo "Domain you want a certificate for. Wildcard certs: use \"*.example.org\""
 read -rp "Domain: " DOMAIN
 echo ""
@@ -57,11 +55,9 @@ new_csr_and_key() {
 
 csr_instructions() {
     echo ""
-    echo "${DIV}"
     echo " 1. Submit CSR to CA: ${CSRPATH}"
     echo " 2. Place signed ${CRT} in ${OUTPATH}/"
     echo " 3. Re-run gencert.sh with Domain: ${DOMAIN}"
-    echo "${DIV}"
     echo ""
 }
 
@@ -79,10 +75,11 @@ if [[ -f "${KEYPATH}" ]] && [[ -f "${CSRPATH}" ]]; then
             echo "Found PFX: ${PFXPATH}"
             echo "Nothing to do."
         else
+            echo "Generating new PFX: ${PFXPATH}"
             new_pfx
         fi
    else
-        echo "No signed cert found in ${OUTPATH}/"
+        echo "Found key and CSR, but no signed CRT found in ${OUTPATH}/"
         csr_instructions
         # TODO: Do you want to re-generate CSR and/or key?
     fi
@@ -92,7 +89,7 @@ elif [[ -f "${KEYPATH}" ]] && [[ ! -f "${CSRPATH}" ]]; then
     new_csr_from_key
     csr_instructions
 else
-    echo "Generating new key and CSR"
+    echo "Generating new key and CSR in ${OUTPATH}/"
     new_csr_and_key
     csr_instructions
 fi
