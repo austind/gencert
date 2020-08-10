@@ -15,9 +15,7 @@ read -rp "Domain: " DOMAIN
 
 if [[ "${DOMAIN}" == *'*'* ]]; then
     SLD=$(echo "${DOMAIN}" | sed 's/\*\.//g')
-    echo $SLD
     NAME="${SLD}-wildcard"
-    echo $NAME
 else
     NAME="${SLD}"
 fi
@@ -29,8 +27,15 @@ if [ ! -d "${OUTPATH}" ]; then
     mkdir "${OUTPATH}"
 fi
 
-echo "Generating key & CSR for ${DOMAIN}"
+KEY="${OUTNAME}.key"
+CSR="${OUTNAME}.csr"
+
+# If key exists without CSR
+if [[ -f "${KEY}" ]] && [[ ! -f "$CSR" ]]; then
+    # Ask to rekey or generate CSR based on key
+    :
+fi
+
 openssl req -new -sha256 -newkey rsa:4096 -nodes \
     -keyout ${OUTNAME}.key -out ${OUTNAME}.csr \
     -subj "/C=${CSR_C}/ST=${CSR_ST}/L=${CSR_L}/O=${CSR_O}/CN=${DOMAIN}"
-
