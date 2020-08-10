@@ -3,6 +3,10 @@
 # No trailing slash
 OUTPREFIX="./out"
 
+# Length of private key
+# 2048 or 4096 are most common
+KEYBITS="4096"
+
 # These values are required to create the CSR
 # but overwritten by the CA in most cases
 CSR_C="US"
@@ -45,7 +49,8 @@ new_csr_from_key() {
 }
 
 new_csr_and_key() {
-    openssl req -new -sha256 -newkey rsa:4096 -nodes \
+    # https://unix.stackexchange.com/a/104305
+    openssl req -new -sha256 -newkey rsa:${KEYBITS} -nodes \
         -keyout ${KEYPATH} -out ${CSRPATH} \
         -subj "/C=${CSR_C}/ST=${CSR_ST}/L=${CSR_L}/O=${CSR_O}/CN=${DOMAIN}"
 }
@@ -53,8 +58,8 @@ new_csr_and_key() {
 csr_instructions() {
     echo ""
     echo "${DIV}"
-    echo " 1. Submit CSR to CA"
-    echo " 2. Place signed ${CRT} in ${OUTPATH}"
+    echo " 1. Submit CSR to CA: ${CSRPATH}"
+    echo " 2. Place signed ${CRT} in ${OUTPATH}/"
     echo " 3. Re-run gencert.sh with Domain: ${DOMAIN}"
     echo "${DIV}"
     echo ""
@@ -77,7 +82,7 @@ if [[ -f "${KEYPATH}" ]] && [[ -f "${CSRPATH}" ]]; then
             new_pfx
         fi
    else
-        echo "Error: no signed cert found in ${OUTPATH}"
+        echo "No signed cert found in ${OUTPATH}/"
         csr_instructions
         # TODO: Do you want to re-generate CSR and/or key?
     fi
