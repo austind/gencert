@@ -7,8 +7,9 @@ OUTPREFIX="./out"
 # 2048 or 4096 are most common
 KEYBITS="4096"
 
-# These values are required to create the CSR
-# but overwritten by the CA in most cases
+# These values are required to create the CSR,
+# but overwritten by the CA for standard domain-validated (DV) certs.
+# For extended-validation (EV) certs, use correct values.
 CSR_C="US"
 CSR_ST="Being"
 CSR_L="Springfield"
